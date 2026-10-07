@@ -11,16 +11,18 @@ spec:
       path: /apis/composition.krateo.io/v0-1-0/namespaces/demo-system/eventsites
       verb: GET
   filter: |
-    { sites: [ .sites.items[]? | {
-        name: .metadata.name,
-        namespace: .metadata.namespace,
-        image: (.spec.image // "—"),
-        replicas: ((.status.readyReplicas // 0) | tostring),
-        form: (.status.formUrl // "—"),
-        health: (if any(.status.conditions[]?; .type == "Ready" and .status == "True") then "Ready"
-                 elif any(.status.conditions[]?; .status == "False") then "Failing"
-                 else "Progressing" end)
-      } ],
+    { sites: [ .sites.items[]? | (
+        (if any(.status.conditions[]?; .type == "Ready" and .status == "True") then "Ready"
+         elif any(.status.conditions[]?; .status == "False") then "Failing"
+         else "Progressing" end) as $h |
+        [ { kind: "string", valueKey: "name",      stringValue: .metadata.name },
+          { kind: "string", valueKey: "namespace", stringValue: .metadata.namespace },
+          { kind: "string", valueKey: "image",     stringValue: (.spec.image // "—") },
+          { kind: "string", valueKey: "replicas",  stringValue: ((.status.readyReplicas // 0) | tostring) },
+          { kind: "string", valueKey: "form",      stringValue: (.status.formUrl // "—") },
+          { kind: "tag",    valueKey: "health",    stringValue: $h,
+            color: (if $h == "Ready" then "green" elif $h == "Failing" then "red" else "blue" end) } ]
+      ) ],
       byHealth: [ .sites.items[]? | (if any(.status.conditions[]?; .type == "Ready" and .status == "True") then "Ready"
                  elif any(.status.conditions[]?; .status == "False") then "Failing"
                  else "Progressing" end) ] | group_by(.) | map({ health: .[0], count: length }) }
