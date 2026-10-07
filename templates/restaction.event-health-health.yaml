@@ -15,11 +15,11 @@ spec:
         (if any(.status.conditions[]?; .type == "Ready" and .status == "True") then "Ready"
          elif any(.status.conditions[]?; .status == "False") then "Failing"
          else "Progressing" end) as $h |
-        [ { kind: "string", valueKey: "name",      stringValue: .metadata.name },
-          { kind: "string", valueKey: "namespace", stringValue: .metadata.namespace },
-          { kind: "string", valueKey: "image",     stringValue: (.spec.image // "—") },
-          { kind: "string", valueKey: "replicas",  stringValue: ((.status.readyReplicas // 0) | tostring) },
-          { kind: "string", valueKey: "form",      stringValue: (.status.formUrl // "—") },
+        [ { kind: "jsonSchemaType", type: "string", valueKey: "name",      stringValue: .metadata.name },
+          { kind: "jsonSchemaType", type: "string", valueKey: "namespace", stringValue: .metadata.namespace },
+          { kind: "jsonSchemaType", type: "string", valueKey: "image",     stringValue: (.spec.image // "—") },
+          { kind: "jsonSchemaType", type: "string", valueKey: "replicas",  stringValue: ((.status.readyReplicas // 0) | tostring) },
+          { kind: "jsonSchemaType", type: "string", valueKey: "form",      stringValue: (.status.formUrl // "—") },
           { kind: "tag",    valueKey: "health",    stringValue: $h,
             color: (if $h == "Ready" then "green" elif $h == "Failing" then "red" else "blue" end) } ]
       ) ],
