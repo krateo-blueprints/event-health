@@ -1,6 +1,17 @@
 apiVersion: v2
 appVersion: CHART_VERSION
 description: Krateo Composable Portal pages — event-health.
+icon: https://raw.githubusercontent.com/krateo-platformops/.github/main/brand/logo.svg
 name: event-health
 type: application
 version: CHART_VERSION
+keywords:
+  - portal
+  - pages
+  - dashboard
+  - health
+sources:
+  - https://github.com/krateo-blueprints/event-health
+annotations:
+  krateo.io/source-repo: krateo-blueprints/event-health
+  krateo.io/kind: page-set
